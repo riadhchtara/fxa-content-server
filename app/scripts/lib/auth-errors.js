@@ -191,6 +191,10 @@ function (_, Errors) {
     FORCE_AUTH_EMAIL_REQUIRED: {
       errno: 1024,
       message: t('/force_auth requires an email')
+    },
+    ERROR_NEWSLETTER_SIGNUP: {
+      errno: 1025,
+      message: t('Could not sign up for newsletter')
     }
   };
 
