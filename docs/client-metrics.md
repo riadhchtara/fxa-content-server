@@ -86,14 +86,34 @@ The event stream is a log of events and the time they occurred while the user is
 #### Generic events
 * tooltip.generic-dismissed - a dismissable tooltip is dismissed
 
+#### account_unlock_complete
 #### cannot_create_account
 #### change_password
+* error.change-password.auth.121 - account locked
+* change-password.unlock-email.send - user attempted to send unlock email
+* change-password.unlock-email.send.success - unlock email successfully sent
+
+#### complete_account_unlock
+* complete-account-unlock.link_expired - account was removed before link was verified.
+* complete-account-unlock.link_damaged - verification link is damaged
+* complete-account-unlock.verification.success - successful verification
+
 #### complete_reset_password
 #### complete_sign_up
 #### confirm
+#### confirm_account_unlock
+* confirm-account-unlock.verification.success - account unlock verification occurred in another tab
+* confirm-account-unlock.resend - attempt to resend unlock email
+* confirm-account-unlock.resend.success - resend email successfully sent
+* error.confirm-account-unlock.auth.122 - account not locked
+
 #### confirm_reset_password
 #### cookies_disabled
 #### delete_account
+* error.delete-account.auth.121 - account locked
+* delete-account.unlock-email.send - user attempted to send unlock email
+* delete-account.unlock-email.send.success - unlock email successfully sent
+
 #### force_auth
 #### illegal_iframe
 #### legal
@@ -107,11 +127,13 @@ The event stream is a log of events and the time they occurred while the user is
 #### settings/avatar/crop
 #### settings/avatar/gravatar
 #### signin
+* error.signin.auth.121 - account locked
+* signin.unlock-email.send - user attempted to send unlock email
+* signin.unlock-email.send.success - unlock email successfully sent
+
 #### signup
 * tooltip.mailcheck-suggested - an email address correction was suggested
 * tooltip.mailcheck-used - an email address correction was chosen by the user
 * tooltip.mailcheck-dismissed - an email address correction tooltip was dismissed without the selection being made.
 #### tos
 #### unexpected_error
-
-
