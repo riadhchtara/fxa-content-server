@@ -12,10 +12,12 @@ define([
   'lib/auth-errors',
   'lib/validate',
   'lib/promise',
-  'views/mixins/resend-mixin'
+  'views/mixins/resend-mixin',
+  'models/verification/sign-up',
+  'lib/url'
 ],
 function (Cocktail, FormView, BaseView, CompleteSignUpTemplate,
-  AuthErrors, Validate, p, ResendMixin) {
+  AuthErrors, Validate, p, ResendMixin, VerificationInfo, Url) {
   var t = BaseView.t;
 
   var CompleteSignUpView = FormView.extend({
@@ -30,19 +32,12 @@ function (Cocktail, FormView, BaseView, CompleteSignUpTemplate,
     initialize: function (options) {
       options = options || {};
 
-      try {
-        this.importSearchParam('uid');
-        this.importSearchParam('code');
+      // TODO - pass this in!
+      var searchParams = Url.searchParams(this.window.location.search);
+      this._verificationInfo = new VerificationInfo(searchParams);
+      var uid = this._verificationInfo.get('uid');
 
-        // Remove any spaces that are probably due to a MUA adding
-        // line breaks in the middle of the link.
-        this._uid = this.uid.replace(/ /g, '');
-        this._code = this.code.replace(/ /g, '');
-      } catch (e) {
-        this._isLinkDamaged = true;
-      }
-
-      this._account = options.account || this.user.getAccountByUid(this._uid);
+      this._account = options.account || this.user.getAccountByUid(uid);
 
       // cache the email in case we need to attempt to resend the
       // verification link
@@ -62,7 +57,10 @@ function (Cocktail, FormView, BaseView, CompleteSignUpTemplate,
         return true;
       }
 
-      return self.fxaClient.verifyCode(self._uid, self._code)
+      var verificationInfo = self._verificationInfo;
+      var uid = verificationInfo.get('uid');
+      var code = verificationInfo.get('code');
+      return self.fxaClient.verifyCode(uid, code)
           .then(function () {
             self.logScreenEvent('verification.success');
             return self.broker.afterCompleteSignUp(self.getAccount());
@@ -91,36 +89,38 @@ function (Cocktail, FormView, BaseView, CompleteSignUpTemplate,
           })
           .then(null, function (err) {
             if (AuthErrors.is(err, 'UNKNOWN_ACCOUNT')) {
-              self._isLinkExpired = true;
+              verificationInfo.markExpired();
               err = AuthErrors.toError('EXPIRED_VERIFICATION_LINK');
-            } else if (AuthErrors.is(err, 'INVALID_VERIFICATION_CODE') ||
+            } else if (
+                AuthErrors.is(err, 'INVALID_VERIFICATION_CODE') ||
                 AuthErrors.is(err, 'INVALID_PARAMETER')) {
-              // These errors show a link damaged screen
-              self._isLinkDamaged = true;
+              // These server says the verification code or any parameter is
+              // invalid. The entire link is damaged.
+              verificationInfo.markDamaged();
               err = AuthErrors.toError('DAMAGED_VERIFICATION_LINK');
             } else {
               // all other errors show the standard error box.
               self._error = self.translateError(err);
             }
+
             self.logError(err);
             return true;
           });
     },
 
     _doesLinkValidate: function () {
-      return Validate.isUidValid(this._uid) &&
-             Validate.isCodeValid(this._code) &&
-             ! this._isLinkDamaged;
+      return this._verificationInfo.isValid();
+    },
+
+    _isLinkExpired: function () {
+      return this._verificationInfo.isExpired();
     },
 
     context: function () {
-      var doesLinkValidate = this._doesLinkValidate();
-      var isLinkExpired = this._isLinkExpired;
-
       return {
         // If the link is invalid, print a special error message.
-        isLinkDamaged: ! doesLinkValidate,
-        isLinkExpired: isLinkExpired,
+        isLinkDamaged: ! this._doesLinkValidate(),
+        isLinkExpired: this._isLinkExpired(),
 
         // This is only the case if you've signed up in the
         // same browser you opened the verification link in.

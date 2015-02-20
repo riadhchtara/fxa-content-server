@@ -180,6 +180,28 @@ define([
     }, [ selector ], timeout);
   }
 
+  function notVisible(context, selector) {
+    return function () {
+      return context.get('remote')
+        .setFindTimeout(0)
+
+        .findByCssSelector(selector)
+          .then(function () {
+            throw new Error(selector + ' should not be present');
+          }, function (err) {
+            if (/NoSuchElement/.test(String(err))) {
+              // swallow the error
+              return;
+            }
+
+            throw err;
+          })
+        .end()
+
+        .setFindTimeout(config.pageLoadTimeout);
+    };
+  }
+
   function getVerificationLink(user, index) {
     if (/@/.test(user)) {
       user = TestHelpers.emailToUser(user);
@@ -482,6 +504,7 @@ define([
     clearBrowserState: clearBrowserState,
     clearSessionStorage: clearSessionStorage,
     visibleByQSA: visibleByQSA,
+    notVisible: notVisible,
     pollUntil: pollUntil,
     getVerificationLink: getVerificationLink,
     getVerificationHeaders: getVerificationHeaders,

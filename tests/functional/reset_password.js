@@ -276,7 +276,9 @@ define([
           var malformedToken = createRandomHexString(token.length - 1);
           return openCompleteResetPassword(self, email, malformedToken, code)
             .findById('fxa-reset-link-damaged-header')
-            .end();
+            .end()
+
+            .then(FunctionalHelpers.notVisible(self, '#fxa-reset-link-expired-header'));
         });
     },
 
@@ -287,7 +289,9 @@ define([
           var invalidToken = createRandomHexString(token.length);
           return openCompleteResetPassword(self, email, invalidToken, code)
             .findById('fxa-reset-link-expired-header')
-            .end();
+            .end()
+
+            .then(FunctionalHelpers.notVisible(self, '#fxa-reset-link-damaged-header'));
         });
     },
 
