@@ -28,7 +28,8 @@ function (chai, sinon, IFrameChannel, AuthErrors, WindowMock, TestHelpers) {
 
       channel = new IFrameChannel();
       return channel.init({
-        window: windowMock
+        window: windowMock,
+        origin: 'https://trusted-parent.org'
       });
     });
 
@@ -37,7 +38,7 @@ function (chai, sinon, IFrameChannel, AuthErrors, WindowMock, TestHelpers) {
     });
 
     describe('send', function () {
-      it('sends a message to the parent', function (done) {
+      it('sends a message to the parent, at specified origin', function (done) {
         sinon.stub(parentMock, 'postMessage', function (msg, targetOrigin) {
           TestHelpers.wrapAssertion(function () {
             var parsed = IFrameChannel.parse(msg);
@@ -46,7 +47,7 @@ function (chai, sinon, IFrameChannel, AuthErrors, WindowMock, TestHelpers) {
 
             assert.equal(command, 'ping');
             assert.equal(data.key, 'value');
-            assert.ok(targetOrigin);
+            assert.equal(targetOrigin, 'https://trusted-parent.org');
           }, done);
         });
 
@@ -98,16 +99,27 @@ function (chai, sinon, IFrameChannel, AuthErrors, WindowMock, TestHelpers) {
     });
 
     describe('receiveMessage', function () {
-      it('triggers an event', function (done) {
-        channel.on('message_type', function (data) {
-          TestHelpers.wrapAssertion(function () {
-            assert.equal(data.key, 'value');
-          }, done);
-        });
+      it('triggers an event if message is from trusted origin', function () {
+        sinon.spy(channel, 'trigger');
 
         channel.receiveMessage({
-          data: IFrameChannel.stringify('message_type', { key: 'value' })
+          data: IFrameChannel.stringify('message_type', { key: 'value' }),
+          origin: 'https://trusted-parent.org'
         });
+
+        assert.isTrue(
+          channel.trigger.calledWith('message_type', { key: 'value' }));
+      });
+
+      it('ignores messages from untrusted origins', function () {
+        sinon.spy(channel, 'trigger');
+
+        channel.receiveMessage({
+          data: IFrameChannel.stringify('message_type', { key: 'value' }),
+          origin: 'https://untrusted-parent.org'
+        });
+
+        assert.isFalse(channel.trigger.called);
       });
 
       it('can handle a malformed message', function () {
@@ -123,7 +135,7 @@ function (chai, sinon, IFrameChannel, AuthErrors, WindowMock, TestHelpers) {
         channel.send('ping', {}, function (err, data) {
           TestHelpers.wrapAssertion(function () {
             assert.equal(data.key, 'value');
-            assert.equal(data.origin, 'https://marketplace.firefox.com');
+            assert.equal(data.origin, 'https://trusted-parent.org');
           }, done);
         });
 
@@ -131,7 +143,7 @@ function (chai, sinon, IFrameChannel, AuthErrors, WindowMock, TestHelpers) {
         var message = IFrameChannel.stringify('ping', { key: 'value' });
         channel.receiveMessage({
           data: message,
-          origin: 'https://marketplace.firefox.com'
+          origin: 'https://trusted-parent.org'
         });
       });
     });

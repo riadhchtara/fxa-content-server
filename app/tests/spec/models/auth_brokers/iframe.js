@@ -49,6 +49,17 @@ function (chai, sinon, $, IframeAuthenticationBroker, Relier, p, NullChannel,
     });
 
     describe('selectStartPage', function () {
+      it('times out if RP is not allowed to use the IFRAME', function () {
+        sinon.stub(broker, 'send', function () {
+          return p.reject(AuthErrors.toError('CHANNEL_TIMEOUT'));
+        });
+
+        return broker.selectStartPage()
+          .then(assert.fail, function (err) {
+            assert.isTrue(AuthErrors.is(err, 'CHANNEL_TIMEOUT'));
+          });
+      });
+
       it('returns nothing if RP is allowed to use the IFRAME', function () {
         sinon.stub(broker, 'send', function () {
           return p({
@@ -64,22 +75,7 @@ function (chai, sinon, $, IframeAuthenticationBroker, Relier, p, NullChannel,
           });
       });
 
-      it('returns `illegal_iframe` if RP is not allowed to use the IFRAME', function () {
-        sinon.stub(broker, 'send', function () {
-          return p({
-            origin: 'https://conartist.com'
-          });
-        });
-
-        relierMock.set('redirectUri', 'https://marketplace.firefox.com/endpoint');
-
-        return broker.selectStartPage()
-          .then(function (page) {
-            assert.equal(page, 'illegal_iframe');
-          });
-      });
-
-      it('re-throws other errors', function () {
+      it('re-throws errors', function () {
         sinon.stub(broker, 'send', function () {
           return p.reject(new Error('uh oh'));
         });

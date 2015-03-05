@@ -180,10 +180,6 @@ function (_, Errors) {
       errno: 1021,
       message: t('Unexpected error')
     },
-    ILLEGAL_IFRAME_PARENT: {
-      errno: 1022,
-      message: t('Firefox Accounts can only be placed into an IFRAME on approved sites')
-    },
     INVALID_EMAIL: {
       errno: 1023,
       message: t('Valid email required')

@@ -63,6 +63,15 @@ function (chai, _, Url) {
         assert.equal(Url.objToSearchString({}), '');
       });
     });
+
+    describe('getOrigin', function () {
+      it('returns the origin portion of the URL', function () {
+        assert.equal(
+          Url.getOrigin('https://marketplace.firefox.com/redirect/to_this_page'),
+          'https://marketplace.firefox.com'
+        );
+      });
+    });
   });
 });
 

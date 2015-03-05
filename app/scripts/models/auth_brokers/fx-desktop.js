@@ -93,7 +93,10 @@ define([
       var channel = this._channel || new FxDesktopChannel();
 
       channel.init({
-        window: this.window
+        window: this.window,
+        // The browser is the origin. Events from the browser have no origin.
+        // Allow messages from anywhere.
+        origin: '*'
       });
 
       return channel;

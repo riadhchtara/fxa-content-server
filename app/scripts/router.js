@@ -32,8 +32,7 @@ define([
   'views/delete_account',
   'views/cookies_disabled',
   'views/clear_storage',
-  'views/unexpected_error',
-  'views/illegal_iframe'
+  'views/unexpected_error'
 ],
 function (
   _,
@@ -63,8 +62,7 @@ function (
   DeleteAccountView,
   CookiesDisabledView,
   ClearStorageView,
-  UnexpectedErrorView,
-  IllegalIframeView
+  UnexpectedErrorView
 ) {
 
   function showView(View, options) {
@@ -103,8 +101,7 @@ function (
       'force_auth(/)': showView(ForceAuthView),
       'cookies_disabled(/)': showView(CookiesDisabledView),
       'clear(/)': showView(ClearStorageView),
-      'unexpected_error(/)': showView(UnexpectedErrorView),
-      'illegal_iframe(/)': showView(IllegalIframeView)
+      'unexpected_error(/)': showView(UnexpectedErrorView)
     },
 
     initialize: function (options) {

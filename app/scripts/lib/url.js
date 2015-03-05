@@ -59,6 +59,18 @@ function (_) {
         return '';
       }
       return '?' + params.join('&');
+    },
+
+    getOrigin: function (url) {
+      // The URL API is only supported by new browsers, a workaround is used.
+      var anchor = document.createElement('a');
+
+      // Fx 18 (& FxOS 1.*) do not support anchor.origin. Build the origin
+      // out of the protocol and host.
+      // Use setAttibute instead of a direct set or else Fx18 does not
+      // update anchor.protocol & anchor.host.
+      anchor.setAttribute('href', url);
+      return anchor.protocol + '//' + anchor.host;
     }
   };
 });

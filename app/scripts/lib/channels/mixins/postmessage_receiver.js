@@ -47,6 +47,8 @@ define([
 
       this.window = options.window || window;
 
+      this._origin = options.origin;
+
       this._boundReceiveMessage = _.bind(this.receiveMessage, this);
       this.window.addEventListener('message', this._boundReceiveMessage, true);
 
@@ -90,9 +92,19 @@ define([
       errorIfNoResponse.call(this, outstanding);
     },
 
+    isEventFromExpectedOrigin: function (event) {
+      if (this._origin === '*') {
+        return true;
+      }
+
+      return this._origin === event.origin;
+    },
+
     receiveMessage: function (event) {
-      // TODO - Ensure the event.origin is one we trust,
-      // esp in the iframe case
+      if (! this.isEventFromExpectedOrigin(event)) {
+        // from an unexpected origin, drop it on the ground.
+        return;
+      }
 
       var components = this.parseMessage(event.data);
       if (components) {
@@ -108,6 +120,15 @@ define([
 
         this.trigger(command, data);
       }
+    },
+
+    /**
+     * Get the origin from which messages are accepted.
+     *
+     * @method getOrigin.
+     */
+    getOrigin: function () {
+      return this._origin;
     }
   };
 
