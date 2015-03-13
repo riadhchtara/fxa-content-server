@@ -180,7 +180,7 @@ define([
     }, [ selector ], timeout);
   }
 
-  function notVisible(context, selector) {
+  function noSuchElement(context, selector) {
     return function () {
       return context.get('remote')
         .setFindTimeout(0)
@@ -504,7 +504,7 @@ define([
     clearBrowserState: clearBrowserState,
     clearSessionStorage: clearSessionStorage,
     visibleByQSA: visibleByQSA,
-    notVisible: notVisible,
+    noSuchElement: noSuchElement,
     pollUntil: pollUntil,
     getVerificationLink: getVerificationLink,
     getVerificationHeaders: getVerificationHeaders,

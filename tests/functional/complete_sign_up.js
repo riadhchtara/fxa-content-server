@@ -70,7 +70,7 @@ define([
         .findById('fxa-verification-link-damaged-header')
         .end()
 
-        .then(FunctionalHelpers.notVisible(this, '#fxa-verification-link-expired-header'));
+        .then(FunctionalHelpers.noSuchElement(this, '#fxa-verification-link-expired-header'));
 
     },
 
@@ -161,11 +161,11 @@ define([
         .findById('fxa-verification-link-expired-header')
         .end()
 
-        .then(FunctionalHelpers.notVisible(self, '#fxa-verification-link-damaged-header'))
+        .then(FunctionalHelpers.noSuchElement(self, '#fxa-verification-link-damaged-header'))
 
         // Give resend time to show up
         .setFindTimeout(200)
-        .then(FunctionalHelpers.notVisible(self, '#resend'));
+        .then(FunctionalHelpers.noSuchElement(self, '#resend'));
     }
   });
 

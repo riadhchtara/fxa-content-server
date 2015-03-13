@@ -278,7 +278,7 @@ define([
             .findById('fxa-reset-link-damaged-header')
             .end()
 
-            .then(FunctionalHelpers.notVisible(self, '#fxa-reset-link-expired-header'));
+            .then(FunctionalHelpers.noSuchElement(self, '#fxa-reset-link-expired-header'));
         });
     },
 
@@ -291,7 +291,7 @@ define([
             .findById('fxa-reset-link-expired-header')
             .end()
 
-            .then(FunctionalHelpers.notVisible(self, '#fxa-reset-link-damaged-header'));
+            .then(FunctionalHelpers.noSuchElement(self, '#fxa-reset-link-damaged-header'));
         });
     },
 
