@@ -6,6 +6,7 @@
   "esnext": true,
   "globalstrict": false,
   "immed": true,
+  "maxcomplexity": 6,
   "indent": 2,
   "latedef": true,
   "newcap": true,

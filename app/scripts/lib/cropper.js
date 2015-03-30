@@ -24,6 +24,10 @@ function () {
    * }
    */
   function Cropper (options) {
+    function isNotUndefined (value, defaultValue) {
+      return typeof value !== 'undefined' ? value : defaultValue;
+    }
+
     this.displayLength = options.displayLength || DEFAULT_DISPLAY_LENGTH;
     this.exportLength = options.exportLength || DEFAULT_EXPORT_LENGTH;
 
@@ -31,12 +35,8 @@ function () {
     this.left = 0;
     this.yCenter = 0;
     this.xCenter = 0;
-    this.verticalGutter = typeof options.verticalGutter !== 'undefined' ?
-                            options.verticalGutter :
-                            DEFAULT_GUTTER;
-    this.horizontalGutter = typeof options.horizontalGutter !== 'undefined' ?
-                            options.horizontalGutter :
-                            DEFAULT_GUTTER;
+    this.verticalGutter = isNotUndefined(options.verticalGutter, DEFAULT_GUTTER);
+    this.horizontalGutter = isNotUndefined(options.horizontalGutter, DEFAULT_GUTTER);
 
     if (! options.container) {
       throw new Error('A container element is required');

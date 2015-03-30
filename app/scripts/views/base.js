@@ -88,24 +88,37 @@ function (Cocktail, _, Backbone, $, p, AuthErrors,
 
   var BaseView = Backbone.View.extend({
     constructor: function (options) {
+
+      function setUISettings () {
+        self.subviews = [];
+        self.screenName = options.screenName || '';
+        self.ephemeralMessages = options.ephemeralMessages || ephemeralMessages;
+        self.screenName = options.screenName || '';
+        self.fxaClient = options.fxaClient;
+      }
+
+      function setBrowserSettings () {
+        self.window = options.window || window;
+        self.navigator = options.navigator || self.window.navigator || navigator;
+        self._canGoBack = options.canGoBack;
+        self.automatedBrowser = !!self.searchParam('automatedBrowser');
+      }
+
+      function setAppSettings () {
+        self.translator = options.translator || self.window.translator;
+        self.router = options.router || self.window.router;
+        self.metrics = options.metrics || nullMetrics;
+        self.relier = options.relier;
+        self.broker = options.broker;
+        self.user = options.user;
+      }
+
+      var self = this;
       options = options || {};
 
-      this.subviews = [];
-      this.window = options.window || window;
-      this.navigator = options.navigator || this.window.navigator || navigator;
-      this.translator = options.translator || this.window.translator;
-      this.router = options.router || this.window.router;
-      this.ephemeralMessages = options.ephemeralMessages || ephemeralMessages;
-      this.metrics = options.metrics || nullMetrics;
-      this.relier = options.relier;
-      this.broker = options.broker;
-      this.user = options.user;
-      this.screenName = options.screenName || '';
-
-      this.fxaClient = options.fxaClient;
-      this._canGoBack = options.canGoBack;
-
-      this.automatedBrowser = !!this.searchParam('automatedBrowser');
+      setUISettings();
+      setBrowserSettings();
+      setAppSettings();
 
       Backbone.View.call(this, options);
 

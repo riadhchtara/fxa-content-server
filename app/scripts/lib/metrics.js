@@ -52,12 +52,33 @@ define([
   var NOT_REPORTED_VALUE = 'none';
 
   function Metrics (options) {
+    function setContextSettings () {
+      self._context = options.context || 'web';
+      self._entrypoint = options.entrypoint || NOT_REPORTED_VALUE;
+      self._migration = options.migration || NOT_REPORTED_VALUE;
+      self._service = options.service || NOT_REPORTED_VALUE;
+      self._campaign = options.campaign || NOT_REPORTED_VALUE;
+    }
+
+    function setSizeSettings () {
+      self._clientHeight = options.clientHeight || NOT_REPORTED_VALUE;
+      self._clientWidth = options.clientWidth || NOT_REPORTED_VALUE;
+      self._devicePixelRatio = options.devicePixelRatio || NOT_REPORTED_VALUE;
+      self._screenHeight = options.screenHeight || NOT_REPORTED_VALUE;
+      self._screenWidth = options.screenWidth || NOT_REPORTED_VALUE;
+    }
+
+    function setServerSettings () {
+      // by default, send the metrics to the content server.
+      self._collector = options.collector || '';
+
+      self._ajax = options.ajax || xhr.ajax;
+    }
+
+    var self = this;
     options = options || {};
 
-    // by default, send the metrics to the content server.
-    this._collector = options.collector || '';
-
-    this._ajax = options.ajax || xhr.ajax;
+    setServerSettings();
 
     this._speedTrap = new SpeedTrap();
     this._speedTrap.init();
@@ -69,17 +90,9 @@ define([
     this._window = options.window || window;
 
     this._lang = options.lang || 'unknown';
-    this._context = options.context || 'web';
-    this._entrypoint = options.entrypoint || NOT_REPORTED_VALUE;
-    this._migration = options.migration || NOT_REPORTED_VALUE;
-    this._service = options.service || NOT_REPORTED_VALUE;
-    this._campaign = options.campaign || NOT_REPORTED_VALUE;
+    setContextSettings();
 
-    this._clientHeight = options.clientHeight || NOT_REPORTED_VALUE;
-    this._clientWidth = options.clientWidth || NOT_REPORTED_VALUE;
-    this._devicePixelRatio = options.devicePixelRatio || NOT_REPORTED_VALUE;
-    this._screenHeight = options.screenHeight || NOT_REPORTED_VALUE;
-    this._screenWidth = options.screenWidth || NOT_REPORTED_VALUE;
+    setSizeSettings();
 
     this._inactivityFlushMs = options.inactivityFlushMs || TEN_MINS_MS;
 

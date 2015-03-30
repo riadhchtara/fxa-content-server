@@ -81,6 +81,12 @@ function (chai, $, sinon, TestHelpers, p, ConfigLoader,
           .then(function () {
             var defer = p.defer();
             $.getJSON(ISSUER + '/.well-known/browserid', function (data) {
+              function throwIfNotNumber(n, message) {
+                if (typeof n !== 'number') {
+                  throw new Error(message);
+                }
+              }
+
               try {
                 assert.ok(data, 'Received .well-known data');
                 var fxaRootKey = jwcrypto.loadPublicKeyFromObject(data['public-key']);
@@ -95,13 +101,8 @@ function (chai, $, sinon, TestHelpers, p, ConfigLoader,
                 assert.ok(components.payload.iat, 'Issued date exists');
                 assert.ok(components.payload.exp, 'Expire date exists');
 
-                if (typeof components.payload.iat !== 'number') {
-                  throw new Error('cert lacks an "issued at" (.iat) field');
-                }
-
-                if (typeof components.payload.exp !== 'number') {
-                  throw new Error('cert lacks an "expires" (.exp) field');
-                }
+                throwIfNotNumber(components.payload.iat, 'cert lacks an "issued at" (.iat) field');
+                throwIfNotNumber(components.payload.exp, 'cert lacks an "expires" (.exp) field');
 
                 if (components.payload.exp < components.payload.iat) {
                   throw new Error('assertion expires before cert is valid');

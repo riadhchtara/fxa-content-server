@@ -11,17 +11,21 @@ define([
   var NOT_REPORTED_VALUE = 'none';
 
   function ScreenInfo(win) {
+    function setSizeSettings () {
+      // for more information:
+      // http://quirksmode.org/mobile/viewports.html and
+      // http://quirksmode.org/mobile/viewports2.html
+      self.clientHeight = documentElement.clientHeight || NOT_REPORTED_VALUE;
+      self.clientWidth = documentElement.clientWidth || NOT_REPORTED_VALUE;
+      self.devicePixelRatio = win.devicePixelRatio || NOT_REPORTED_VALUE;
+      self.screenHeight = screen.height || NOT_REPORTED_VALUE;
+      self.screenWidth = screen.width || NOT_REPORTED_VALUE;
+    }
+
+    var self = this;
     var documentElement = win.document.documentElement || {};
     var screen = win.screen || {};
-
-    // for more information:
-    // http://quirksmode.org/mobile/viewports.html and
-    // http://quirksmode.org/mobile/viewports2.html
-    this.clientHeight = documentElement.clientHeight || NOT_REPORTED_VALUE;
-    this.clientWidth = documentElement.clientWidth || NOT_REPORTED_VALUE;
-    this.devicePixelRatio = win.devicePixelRatio || NOT_REPORTED_VALUE;
-    this.screenHeight = screen.height || NOT_REPORTED_VALUE;
-    this.screenWidth = screen.width || NOT_REPORTED_VALUE;
+    setSizeSettings(screen);
   }
 
   return ScreenInfo;

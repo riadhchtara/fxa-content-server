@@ -12,12 +12,17 @@ define([
 ],
 function (args, topic, firefoxProfile) {
   'use strict';
+  function setAddresses () {
+    fxaAuthRoot = args.fxaAuthRoot || 'http://127.0.0.1:9000/v1';
+    fxaContentRoot = args.fxaContentRoot || 'http://127.0.0.1:3030/';
+    fxaEmailRoot = args.fxaEmailRoot || 'http://127.0.0.1:9001';
+    fxaOauthApp = args.fxaOauthApp || 'http://127.0.0.1:8080/';
+    fxaIframeOauthApp = args.fxaIframeOauthApp || 'http://127.0.0.1:8080/iframe';
+  }
 
-  var fxaAuthRoot = args.fxaAuthRoot || 'http://127.0.0.1:9000/v1';
-  var fxaContentRoot = args.fxaContentRoot || 'http://127.0.0.1:3030/';
-  var fxaEmailRoot = args.fxaEmailRoot || 'http://127.0.0.1:9001';
-  var fxaOauthApp = args.fxaOauthApp || 'http://127.0.0.1:8080/';
-  var fxaIframeOauthApp = args.fxaIframeOauthApp || 'http://127.0.0.1:8080/iframe';
+  var fxaAuthRoot, fxaContentRoot, fxaEmailRoot, fxaOauthApp, fxaIframeOauthApp;
+  setAddresses();
+
   var fxaProduction = !!args.fxaProduction;
   var fxaToken = args.fxaToken || 'http://';
 
